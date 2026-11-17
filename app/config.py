@@ -32,6 +32,7 @@ def env(name, default=""):
 SHEETS_WEBAPP_URL = env("SHEETS_WEBAPP_URL")
 SHEETS_SHARED_SECRET = env("SHEETS_SHARED_SECRET")
 CSV_PATH = ROOT / env("CSV_PATH", "data/leads.csv")
+LOCAL_COPY = env("LOCAL_COPY", "1") == "1"  # with a Google Sheet, also keep a local CSV copy for the dashboard
 
 # Notifications. Empty = demo mode (message written to data/outbox.log instead).
 SLACK_WEBHOOK_URL = env("SLACK_WEBHOOK_URL")
@@ -42,6 +43,27 @@ SMTP_PASSWORD = env("SMTP_PASSWORD")
 ALERT_EMAIL_FROM = env("ALERT_EMAIL_FROM")
 ALERT_EMAIL_TO = env("ALERT_EMAIL_TO")
 OUTBOX_LOG = ROOT / "data" / "outbox.log"
+
+# Business name used in AI prompts and auto-replies.
+BUSINESS_NAME = env("BUSINESS_NAME", "Greenleaf Landscaping")
+
+# Auto-reply to the lead: off | draft (default, stored for review, never sent) | send (needs SMTP_*).
+AUTO_REPLY_MODE = env("AUTO_REPLY_MODE", "draft").lower()
+AUTO_REPLY_FROM = env("AUTO_REPLY_FROM")
+AUTOREPLY_STORE = ROOT / "data" / "autoreplies.jsonl"
+
+# Spam protection.
+RATE_LIMIT_MAX = int(env("RATE_LIMIT_MAX", "5"))          # submissions per IP per window; 0 = off
+RATE_LIMIT_WINDOW = int(env("RATE_LIMIT_WINDOW", "600"))  # seconds
+TRUST_PROXY = env("TRUST_PROXY") == "1"                   # use X-Forwarded-For behind a reverse proxy
+_extra = env("DISPOSABLE_DOMAINS_FILE")
+DISPOSABLE_DOMAINS_FILE = (ROOT / _extra) if _extra else None
+
+# Optional HubSpot push (off unless a private-app token is set).
+HUBSPOT_ACCESS_TOKEN = env("HUBSPOT_ACCESS_TOKEN")
+
+# Dashboard: if set, /dashboard and the leads API need HTTP Basic auth (any user name).
+DASHBOARD_PASSWORD = env("DASHBOARD_PASSWORD")
 
 HOST = env("HOST", "127.0.0.1")
 PORT = int(env("PORT", "8001"))

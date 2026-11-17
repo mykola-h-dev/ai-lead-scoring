@@ -19,9 +19,11 @@
       <h1>Tell us about your garden project</h1>
       <p class="lead">Fill in the form and our team gets an instant alert. We reply within one business day.</p>
       <ol class="flow">
-        <li><strong>Validate</strong> - required fields, email and phone format, spam honeypot</li>
+        <li><strong>Validate</strong> - required fields, email and phone format, honeypot, rate limit, throwaway-email check</li>
+        <li><strong>Score</strong> - AI (or offline rules) rates the lead hot / warm / cold with intent, urgency, budget and a one-line summary</li>
         <li><strong>Save</strong> - new row in the Google Sheet (or local CSV in demo mode), duplicates skipped</li>
-        <li><strong>Alert</strong> - Slack and/or email notification, with automatic retries</li>
+        <li><strong>Alert</strong> - Slack and/or email notification with the score, with automatic retries</li>
+        <li><strong>Reply</strong> - a personalised auto-reply draft to the lead, ready for review</li>
       </ol>
       <p class="demo-note">Demo site for a fictional company.</p>
     </section>
@@ -51,8 +53,8 @@
   </main>
 
   <section class="leads-panel" id="leads-panel" hidden>
-    <h2>Demo sheet: latest rows in <code>data/leads.csv</code></h2>
-    <table><thead><tr><th>Received</th><th>Name</th><th>Email</th><th>Service</th><th>Message</th></tr></thead><tbody id="leads-body"></tbody></table>
+    <h2>Demo sheet: latest rows in <code>data/leads.csv</code> · <a href="/dashboard">open the dashboard →</a></h2>
+    <table><thead><tr><th>Received</th><th>Name</th><th>Service</th><th>Score</th><th>AI / rule summary</th></tr></thead><tbody id="leads-body"></tbody></table>
   </section>
 
   <script src="/static/form.js"></script>

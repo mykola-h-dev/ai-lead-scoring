@@ -1,12 +1,138 @@
---- would send at 2026-11-17 10:16:48 UTC ---
-New lead: Alex Doe (Tree surgery)
-Email: alex@example.com | Phone: not given
-Message: Remove a dead oak near the fence.
-Received: 2026-11-17 10:16:48 UTC
+--- would send at 2026-11-17 10:54:30 UTC ---
+[WARM] New lead: Sam Rivera (Patio & paving) via facebook
+Score: warm | Intent: quote_request | Urgency: medium
+Summary: Patio & paving: wants a quote, medium urgency. "How much would a small sandstone patio cost? Thinking of doing it next month."
+Email: sam@example.com | Phone: not given
+Message: How much would a small sandstone patio cost? Thinking of doing it next month.
+Received: 2026-11-17 10:54:30 UTC
 
---- would send at 2026-11-17 10:16:49 UTC ---
-New lead: Jordan Example (Patio & paving)
-Email: jordan+9015@example.com | Phone: +1 555 0100
-Message: We'd like a quote for a 4 x 5 m stone patio behind the house.
-Received: 2026-11-17 10:16:49 UTC
+--- auto-reply draft (not sent) 2026-11-17 10:54:30 UTC ---
+To: sam@example.com
+Subject: Thanks for your enquiry, Sam - Greenleaf Landscaping
+
+Hi Sam,
+
+Thanks for getting in touch with Greenleaf Landscaping about patio & paving.
+If you have rough measurements or photos of the area, just reply with them.
+
+A member of the team will reply within one business day.
+
+The Greenleaf Landscaping team
+
+--- would send at 2026-11-17 10:54:30 UTC ---
+[COLD] New lead: Lee Example (Lawn care) via website
+Score: cold | Intent: other | Urgency: low
+Summary: Lawn care: general enquiry, low urgency. "Just browsing ideas for the lawn for now."
+Email: lee@example.net | Phone: not given
+Message: Just browsing ideas for the lawn for now.
+Received: 2026-11-17 10:54:30 UTC
+
+--- auto-reply draft (not sent) 2026-11-17 10:54:30 UTC ---
+To: lee@example.net
+Subject: Thanks for your enquiry, Lee - Greenleaf Landscaping
+
+Hi Lee,
+
+Thanks for getting in touch with Greenleaf Landscaping about lawn care.
+We can suggest a mowing and treatment plan that suits your lawn.
+
+A member of the team will reply within one business day.
+
+The Greenleaf Landscaping team
+
+--- would send at 2026-11-17 10:54:30 UTC ---
+[COLD] New lead: Growth Agency (Other) via website
+Score: cold | Intent: not_a_customer | Urgency: low
+Summary: Other: sales pitch / not a customer, low urgency. "We are an SEO marketing agency and can get you backlinks and more leads..."
+Email: hello@agency.example | Phone: not given
+Message: We are an SEO marketing agency and can get you backlinks and more leads. Reply for our services.
+Received: 2026-11-17 10:54:30 UTC
+
+--- would send at 2026-11-17 10:54:30 UTC ---
+[HOT] New lead: Alex Doe (Garden design) via google
+Score: hot | Intent: booking | Urgency: medium | Budget: $5,000
+Summary: Garden design: wants to book, medium urgency, budget $5,000. "We would like to book a garden design consultation for a new-build garden, roughly..."
+Email: alex@example.org | Phone: +1 555 0100
+Message: We would like to book a garden design consultation for a new-build garden, roughly 10 x 15 m, ideally before spring. Budget $5,000.
+Received: 2026-11-17 10:54:30 UTC
+
+--- auto-reply draft (not sent) 2026-11-17 10:54:30 UTC ---
+To: alex@example.org
+Subject: Thanks for your enquiry, Alex - Greenleaf Landscaping
+
+Hi Alex,
+
+Thanks for getting in touch with Greenleaf Landscaping about garden design.
+Thanks for mentioning your budget ($5,000) - it helps us suggest the right options.
+We'd love to hear more about the space and how you'd like to use it.
+
+A member of the team will reply within one business day.
+
+The Greenleaf Landscaping team
+
+--- would send at 2026-11-17 10:54:30 UTC ---
+[WARM] New lead: Morgan Example (Lawn care) via google
+Score: warm | Intent: quote_request | Urgency: medium
+Summary: Lawn care: wants a quote, medium urgency. "Could you quote for fortnightly mowing at a small terraced house? Starting in two..."
+Email: morgan@example.com | Phone: not given
+Message: Could you quote for fortnightly mowing at a small terraced house? Starting in two weeks.
+Received: 2026-11-17 10:54:30 UTC
+
+--- auto-reply draft (not sent) 2026-11-17 10:54:30 UTC ---
+To: morgan@example.com
+Subject: Thanks for your enquiry, Morgan - Greenleaf Landscaping
+
+Hi Morgan,
+
+Thanks for getting in touch with Greenleaf Landscaping about lawn care.
+We can suggest a mowing and treatment plan that suits your lawn.
+
+A member of the team will reply within one business day.
+
+The Greenleaf Landscaping team
+
+--- would send at 2026-11-17 10:54:30 UTC ---
+[WARM] New lead: Robin Example (Patio & paving) via newsletter
+Score: warm | Intent: service_request | Urgency: high
+Summary: Patio & paving: needs the service, high urgency. "Patio repair needed urgently, several slabs are loose and dangerous."
+Email: robin@example.com | Phone: not given
+Message: Patio repair needed urgently, several slabs are loose and dangerous.
+Received: 2026-11-17 10:54:30 UTC
+
+--- auto-reply draft (not sent) 2026-11-17 10:54:30 UTC ---
+To: robin@example.com
+Subject: Thanks for your enquiry, Robin - Greenleaf Landscaping
+
+Hi Robin,
+
+Thanks for getting in touch with Greenleaf Landscaping about patio & paving.
+We've marked your request as urgent so it goes to the top of the list.
+If you have rough measurements or photos of the area, just reply with them.
+
+A member of the team will reply within one business day.
+
+The Greenleaf Landscaping team
+
+--- would send at 2026-11-17 10:54:30 UTC ---
+[HOT] New lead: Priya Example (Tree surgery) via google
+Score: hot | Intent: quote_request | Urgency: high | Budget: £800
+Summary: Tree surgery: wants a quote, high urgency, budget £800. "A large branch came down in the storm and is leaning on our fence..."
+Email: priya@example.com | Phone: +44 7700 900123
+Message: A large branch came down in the storm and is leaning on our fence. Can you give me a quote and come this week? Budget around £800.
+Received: 2026-11-17 10:54:30 UTC
+
+--- auto-reply draft (not sent) 2026-11-17 10:54:30 UTC ---
+To: priya@example.com
+Subject: Thanks for your enquiry, Priya - Greenleaf Landscaping
+
+Hi Priya,
+
+Thanks for getting in touch with Greenleaf Landscaping about tree surgery.
+We've marked your request as urgent so it goes to the top of the list.
+Thanks for mentioning your budget (£800) - it helps us suggest the right options.
+If you can, reply with a photo of the tree so our arborist can take a first look.
+
+A member of the team will reply within one business day.
+
+The Greenleaf Landscaping team
 

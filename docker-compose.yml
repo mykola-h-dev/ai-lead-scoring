@@ -1,0 +1,14 @@
+services:
+  leads:
+    build: .
+    ports:
+      - "8001:8001"
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      HOST: 0.0.0.0
+      PORT: "8001"
+    volumes:
+      - ./data:/app/data   # leads.csv, outbox.log and auto-reply drafts survive restarts
+    restart: unless-stopped

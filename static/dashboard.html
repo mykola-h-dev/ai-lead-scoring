@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Leads dashboard (demo)</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="dash">
+  <header class="site-header">
+    <div class="logo">Greenleaf <span>Leads</span></div>
+    <span class="demo-badge" id="mode">loading...</span>
+  </header>
+
+  <main class="dash-main">
+    <section class="cards-row" id="cards">
+      <div class="stat"><span>Total leads</span><strong id="c-total">0</strong></div>
+      <div class="stat hot"><span>Hot</span><strong id="c-hot">0</strong></div>
+      <div class="stat warm"><span>Warm</span><strong id="c-warm">0</strong></div>
+      <div class="stat cold"><span>Cold</span><strong id="c-cold">0</strong></div>
+    </section>
+
+    <section class="dash-grid">
+      <div class="panel">
+        <h2>By source</h2>
+        <table class="mini"><tbody id="by-source"></tbody></table>
+      </div>
+      <div class="panel">
+        <h2>By service</h2>
+        <table class="mini"><tbody id="by-service"></tbody></table>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>Leads</h2>
+        <div class="filters" id="filters">
+          <button data-score="" class="active">All</button>
+          <button data-score="hot">Hot</button>
+          <button data-score="warm">Warm</button>
+          <button data-score="cold">Cold</button>
+          <a id="csv-link" class="btn-csv" href="/api/leads.csv">Export CSV</a>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Received</th><th>Name</th><th>Service</th><th>Source</th><th>Score</th><th>Urgency</th><th>Budget</th><th>Summary</th><th>Auto-reply</th></tr></thead>
+          <tbody id="leads-body"></tbody>
+        </table>
+      </div>
+      <p class="empty" id="empty" hidden>No leads yet - submit the <a href="/">form</a>.</p>
+    </section>
+    <p class="demo-note">Demo data for a fictional company. Scores come from the AI when a key is configured, otherwise from transparent keyword rules (shown in the "scored by" tooltip).</p>
+  </main>
+
+  <dialog id="reply-dialog">
+    <h3 id="reply-subject"></h3>
+    <pre id="reply-body"></pre>
+    <form method="dialog"><button>Close</button></form>
+  </dialog>
+  <script src="/static/dashboard.js"></script>
+</body>
+</html>

@@ -18,7 +18,8 @@ import requests
 
 from .retry import PermanentError
 
-COLUMNS = ["received_at", "name", "email", "phone", "service", "message"]
+COLUMNS = ["received_at", "name", "email", "phone", "service", "message", "source",
+           "score", "intent", "urgency", "budget", "summary", "scored_by"]
 
 
 def safe_cell(value):
@@ -42,8 +43,28 @@ class CsvSheet:
         with self.path.open(newline="", encoding="utf-8") as fh:
             return {row["email"].lower() for row in csv.DictReader(fh)}
 
+    def _upgrade_header(self):
+        """Older CSVs had fewer columns: rewrite them once with the current header."""
+        with self.path.open(newline="", encoding="utf-8") as fh:
+            reader = csv.DictReader(fh)
+            if reader.fieldnames == COLUMNS:
+                return
+            rows = list(reader)
+        with self.path.open("w", newline="", encoding="utf-8") as fh:
+            writer = csv.DictWriter(fh, fieldnames=COLUMNS, extrasaction="ignore")
+            writer.writeheader()
+            writer.writerows(rows)
+
+    def rows(self):
+        if not self.path.exists():
+            return []
+        with self.path.open(newline="", encoding="utf-8") as fh:
+            return list(csv.DictReader(fh))
+
     def append(self, lead):
         with self._lock:
+            if self.path.exists():
+                self._upgrade_header()
             if lead["email"] in self._existing_emails():
                 return {"status": "duplicate"}
             is_new_file = not self.path.exists()
@@ -84,8 +105,29 @@ class AppsScriptSheet:
         return data
 
 
+class MirroredSheet:
+    """Google Sheet as the source of truth plus a local CSV copy that feeds the dashboard."""
+
+    def __init__(self, primary, mirror):
+        self.primary, self.mirror = primary, mirror
+        self.name = f"{primary.name} + local copy"
+
+    def append(self, lead):
+        result = self.primary.append(lead)
+        if result.get("status") == "added":
+            try:
+                self.mirror.append(lead)
+            except OSError:
+                pass  # the dashboard copy is best-effort; the sheet already has the row
+        return result
+
+    def rows(self):
+        return self.mirror.rows()
+
+
 def make_sheet(config):
     """Pick the Google Sheet connector if configured, otherwise the CSV demo connector."""
     if config.SHEETS_WEBAPP_URL:
-        return AppsScriptSheet(config.SHEETS_WEBAPP_URL, config.SHEETS_SHARED_SECRET)
+        sheet = AppsScriptSheet(config.SHEETS_WEBAPP_URL, config.SHEETS_SHARED_SECRET)
+        return MirroredSheet(sheet, CsvSheet(config.CSV_PATH)) if config.LOCAL_COPY else sheet
     return CsvSheet(config.CSV_PATH)

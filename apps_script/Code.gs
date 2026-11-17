@@ -14,8 +14,10 @@
  */
 
 var SHEET_NAME = 'Leads';
-var COLUMNS = ['received_at', 'name', 'email', 'phone', 'service', 'message'];
-var HEADERS = ['Received', 'Name', 'Email', 'Phone', 'Service', 'Message'];
+var COLUMNS = ['received_at', 'name', 'email', 'phone', 'service', 'message', 'source',
+               'score', 'intent', 'urgency', 'budget', 'summary', 'scored_by'];
+var HEADERS = ['Received', 'Name', 'Email', 'Phone', 'Service', 'Message', 'Source',
+               'Score', 'Intent', 'Urgency', 'Budget', 'Summary', 'Scored by'];
 
 function doPost(e) {
   try {

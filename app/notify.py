@@ -12,8 +12,14 @@ from .retry import PermanentError
 def format_alert(lead):
     """Plain-text alert used for Slack, email and the demo outbox."""
     phone = lead["phone"] or "not given"
+    score = lead.get("score")
+    head = f"[{score.upper()}] " if score else ""
+    scoring = (f"Score: {score} | Intent: {lead.get('intent')} | Urgency: {lead.get('urgency')}"
+               f"{' | Budget: ' + lead['budget'] if lead.get('budget') else ''}\n"
+               f"Summary: {lead.get('summary')}\n") if score else ""
     return (
-        f"New lead: {lead['name']} ({lead['service']})\n"
+        f"{head}New lead: {lead['name']} ({lead['service']}) via {lead.get('source', 'website')}\n"
+        f"{scoring}"
         f"Email: {lead['email']} | Phone: {phone}\n"
         f"Message: {lead['message']}\n"
         f"Received: {lead['received_at']}"
@@ -43,7 +49,7 @@ class EmailNotifier:
 
     def send(self, lead):
         msg = EmailMessage()
-        msg["Subject"] = f"New lead: {lead['name']} - {lead['service']}"
+        msg["Subject"] = f"{'[' + lead['score'].upper() + '] ' if lead.get('score') else ''}New lead: {lead['name']} - {lead['service']}"
         msg["From"] = self.sender
         msg["To"] = self.recipient
         msg["Reply-To"] = lead["email"]

@@ -3,3 +3,4 @@ __pycache__/
 *.pyc
 data/leads.csv
 data/outbox.log
+data/autoreplies.jsonl

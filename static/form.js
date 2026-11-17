@@ -3,11 +3,15 @@
   const form = document.getElementById("lead-form");
   const status = document.getElementById("form-status");
   const button = form.querySelector("button");
+  // Lead source for the dashboard: ?utm_source=google (or ?source=...) on the page URL, else "website".
+  const params = new URLSearchParams(location.search);
+  const source = params.get("utm_source") || params.get("source") || "website";
 
   fetch("/api/status")
     .then((r) => r.json())
     .then((s) => {
-      document.getElementById("mode").textContent = `${s.sheet} → ${s.notifiers.join(", ")}`;
+      document.getElementById("mode").textContent =
+        `${s.sheet} → ${s.notifiers.join(", ")} · scoring: ${s.scoring} · auto-reply: ${s.auto_reply}`;
     });
   loadLeads();
 
@@ -21,7 +25,7 @@
       const res = await fetch("/api/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(Object.fromEntries(new FormData(form))),
+        body: JSON.stringify({ ...Object.fromEntries(new FormData(form)), source }),
       });
       const data = await res.json();
       if (data.ok) {
@@ -61,16 +65,19 @@
 
   // Demo mode only: the server returns rows from the local CSV, never from a real sheet.
   async function loadLeads() {
-    const { leads } = await fetch("/api/leads").then((r) => r.json());
+    const res = await fetch("/api/leads?limit=10");
+    if (!res.ok) return; // dashboard password set: rows are not shown on the public page
+    const { leads } = await res.json();
     const panel = document.getElementById("leads-panel");
     const body = document.getElementById("leads-body");
     panel.hidden = leads.length === 0;
     body.replaceChildren(
-      ...leads.reverse().map((lead) => {
+      ...leads.map((lead) => {
         const tr = document.createElement("tr");
-        for (const key of ["received_at", "name", "email", "service", "message"]) {
+        for (const key of ["received_at", "name", "service", "score", "summary"]) {
           const td = document.createElement("td");
-          td.textContent = lead[key];
+          td.textContent = lead[key] || "";
+          if (key === "score") td.className = "badge " + (lead.score || "");
           tr.appendChild(td);
         }
         return tr;

@@ -23,7 +23,7 @@ def clean_text(value, limit=200):
     return re.sub(r"\s+", " ", text).strip()[:limit]
 
 
-def validate_lead(form):
+def validate_lead(form, disposable_check=None):
     """Return a clean lead dict or raise ValidationError.
 
     `form` is a dict of submitted fields. A hidden "website" field acts as a
@@ -38,18 +38,24 @@ def validate_lead(form):
         "phone": clean_text(form.get("phone"), 30),
         "service": clean_text(form.get("service"), 50),
         "message": clean_text(form.get("message"), MAX_MESSAGE),
+        # where the lead came from: a hidden "source" field or ?utm_source=... on the page
+        "source": clean_text(form.get("source") or form.get("utm_source"), 40).lower() or "website",
     }
     errors = {}
     if len(lead["name"]) < 2:
         errors["name"] = "Please enter your name."
     if not EMAIL_RE.match(lead["email"]):
         errors["email"] = "Please enter a valid email address."
+    elif disposable_check and disposable_check(lead["email"]):
+        errors["email"] = "Please use a permanent email address so we can reply to you."
     if lead["phone"] and not PHONE_RE.match(lead["phone"]):
         errors["phone"] = "Please enter a valid phone number or leave it empty."
     if lead["service"] not in SERVICES:
         errors["service"] = "Please choose a service."
     if len(lead["message"]) < 10:
         errors["message"] = "Please tell us a little more (at least 10 characters)."
+    if not re.fullmatch(r"[a-z0-9 _.\-]{1,40}", lead["source"]):
+        lead["source"] = "website"
     if errors:
         raise ValidationError(errors)
 
