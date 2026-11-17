@@ -2,6 +2,8 @@
 
 **Every website enquiry is checked for spam, scored hot / warm / cold by AI, saved to a Google Sheet and sent to your team within seconds - with a personalised reply to the lead drafted and waiting for review.**
 
+> **Live demo:** https://ai-lead-scoring-iopj.onrender.com/ — send a test enquiry, then open [/dashboard](https://ai-lead-scoring-iopj.onrender.com/dashboard) to see it scored *(free hosting: the first open after a quiet spell takes up to a minute while the server wakes up; fictional sample data, offline mode, no API keys)*
+
 ![Leads dashboard: counts by score, by source and by service, and a table of scored leads](docs/screenshot.png)
 
 *Screenshot: the leads dashboard in offline demo mode with seven fictional leads (all names and addresses are made up, `example.*` domains). Scores here come from the built-in keyword rules; with an API key the AI writes them.*
