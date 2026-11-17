@@ -1,0 +1,404 @@
+{
+  "name": "Lead form -> Google Sheets -> Slack alert",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "new-lead",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "name": "Lead form webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        300
+      ],
+      "webhookId": "new-lead",
+      "id": "node-01"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Validate and normalise the submitted lead (same rules as the Python app).\nconst body = $json.body || {};\nconst clean = (v, max = 200) => String(v ?? '').replace(/[\\x00-\\x1f\\x7f]/g, ' ').replace(/\\s+/g, ' ').trim().slice(0, max);\nconst lead = {\n  name: clean(body.name, 100),\n  email: clean(body.email, 254).toLowerCase(),\n  phone: clean(body.phone, 30),\n  service: clean(body.service, 50),\n  message: clean(body.message, 1000),\n  received_at: new Date().toISOString().replace('T', ' ').slice(0, 19) + ' UTC',\n};\nconst errors = {};\nif (clean(body.website)) errors.form = 'Submission rejected.';          // honeypot\nif (lead.name.length < 2) errors.name = 'Please enter your name.';\nif (!/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$/.test(lead.email)) errors.email = 'Please enter a valid email address.';\nif (lead.phone && !/^\\+?[0-9 ()\\-.]{7,20}$/.test(lead.phone)) errors.phone = 'Please enter a valid phone number.';\nif (lead.message.length < 10) errors.message = 'Please tell us a little more.';\nreturn [{ json: { ...lead, valid: Object.keys(errors).length === 0, errors } }];"
+      },
+      "name": "Validate lead",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        300
+      ],
+      "id": "node-02"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "cond-true",
+              "leftValue": "={{ $json.valid }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "name": "Is valid?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        440,
+        300
+      ],
+      "id": "node-03"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { ok: false, errors: $json.errors } }}",
+        "options": {
+          "responseCode": 400
+        }
+      },
+      "name": "Respond 400 (invalid)",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        660,
+        480
+      ],
+      "id": "node-04"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "REPLACE_WITH_YOUR_SPREADSHEET_ID"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Leads"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Email",
+              "lookupValue": "={{ $json.email }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Find existing email",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        660,
+        200
+      ],
+      "alwaysOutputData": true,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "id": "node-05"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "cond-notEmpty",
+              "leftValue": "={{ $json.Email }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "name": "Already in sheet?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        880,
+        200
+      ],
+      "id": "node-06"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { ok: true, duplicate: true, message: 'Thanks! We already have your request.' } }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "name": "Respond 200 (duplicate)",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1100,
+        80
+      ],
+      "id": "node-07"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "REPLACE_WITH_YOUR_SPREADSHEET_ID"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Leads"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Received": "={{ $('Validate lead').first().json.received_at }}",
+            "Name": "={{ $('Validate lead').first().json.name }}",
+            "Email": "={{ $('Validate lead').first().json.email }}",
+            "Phone": "={{ $('Validate lead').first().json.phone }}",
+            "Service": "={{ $('Validate lead').first().json.service }}",
+            "Message": "={{ $('Validate lead').first().json.message }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Received",
+              "displayName": "Received",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Service",
+              "displayName": "Service",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Message",
+              "displayName": "Message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Append lead to sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1100,
+        300
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "id": "node-08"
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "#leads"
+        },
+        "text": "=:seedling: New lead: *{{ $('Validate lead').first().json.name }}* ({{ $('Validate lead').first().json.service }})\nEmail: {{ $('Validate lead').first().json.email }} | Phone: {{ $('Validate lead').first().json.phone || 'not given' }}\n{{ $('Validate lead').first().json.message }}",
+        "otherOptions": {}
+      },
+      "name": "Slack alert",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.2,
+      "position": [
+        1320,
+        300
+      ],
+      "onError": "continueRegularOutput",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "id": "node-09"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { ok: true, duplicate: false, message: 'Thanks! We will get back to you within one business day.' } }}",
+        "options": {
+          "responseCode": 201
+        }
+      },
+      "name": "Respond 201 (saved)",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1540,
+        300
+      ],
+      "id": "node-10"
+    }
+  ],
+  "connections": {
+    "Lead form webhook": {
+      "main": [
+        [
+          {
+            "node": "Validate lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate lead": {
+      "main": [
+        [
+          {
+            "node": "Is valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is valid?": {
+      "main": [
+        [
+          {
+            "node": "Find existing email",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond 400 (invalid)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find existing email": {
+      "main": [
+        [
+          {
+            "node": "Already in sheet?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Already in sheet?": {
+      "main": [
+        [
+          {
+            "node": "Respond 200 (duplicate)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Append lead to sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append lead to sheet": {
+      "main": [
+        [
+          {
+            "node": "Slack alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Slack alert": {
+      "main": [
+        [
+          {
+            "node": "Respond 201 (saved)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {},
+  "active": false
+}
