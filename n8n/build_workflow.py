@@ -173,7 +173,7 @@ nodes = [
             "={{ { ok: true, duplicate: true, message: 'Thanks! We already have your request.' } }}"),
     node("AI lead scoring (Gemini)", "n8n-nodes-base.httpRequest", 4.2, [1100, 300], {
         "method": "POST",
-        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent",
         "authentication": "genericCredentialType", "genericAuthType": "httpHeaderAuth",
         "sendBody": True, "specifyBody": "json", "jsonBody": AI_BODY,
         "options": {"timeout": 20000}}, onError="continueRegularOutput", retryOnFail=True, maxTries=2,
